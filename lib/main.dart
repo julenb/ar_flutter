@@ -4,8 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_login/flutter_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-import 'map.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'inicio.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,7 +41,7 @@ class AuthWrapper extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         }
         if (snapshot.hasData) {
-          return const Map(); // Si el usuario está autenticado, va directo al mapa
+          return Inicio(); // Si el usuario está autenticado, va directo al mapa
         }
         return LoginScreen();
       },
@@ -166,7 +166,7 @@ Future<String?> _signInWithApple() async {
       ],
       onSubmitAnimationCompleted: () {
         Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (context) => const Map(),
+          builder: (context) => Inicio(),
         ));
       },
     );
