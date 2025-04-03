@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:879057736072:android:3cb53373808f61cbe66a3d",
+        "mobilesdk_app_id": "1:879057736072:android:ef1dd520a1254201e66a3d",
         "android_client_info": {
-          "package_name": "com.camino"
+          "package_name": "com.example.ar_flutter"
         }
       },
       "oauth_client": [

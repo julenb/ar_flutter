@@ -24,7 +24,27 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: LoginScreen(),
+      home: const AuthWrapper(),
+    );
+  }
+}
+
+class AuthWrapper extends StatelessWidget {
+  const AuthWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasData) {
+          return const Map(); // Si el usuario está autenticado, va directo al mapa
+        }
+        return LoginScreen();
+      },
     );
   }
 }
@@ -48,7 +68,6 @@ class LoginScreen extends StatelessWidget {
     }
   }
 
-  /// 📝 Registro de usuario en Firebase
   Future<String?> _signupUser(SignupData data) async {
     try {
       await _auth.createUserWithEmailAndPassword(
@@ -61,17 +80,15 @@ class LoginScreen extends StatelessWidget {
     }
   }
 
-  /// 🔄 Recuperar contraseña
   Future<String?> _recoverPassword(String name) async {
     try {
       await _auth.sendPasswordResetEmail(email: name);
-      return 'Se ha enviado un enlace de recuperación a tu correo';
+      //return 'Se ha enviado un enlace de recuperación a tu correo';
     } catch (e) {
       return 'Error: ${e.toString()}';
     }
   }
 
-  /// 🔴 Iniciar sesión con Google
   Future<String?> _signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
@@ -92,24 +109,31 @@ class LoginScreen extends StatelessWidget {
     }
   }
 
-  /// 🍏 Iniciar sesión con Apple
-  Future<String?> _signInWithApple() async {
-    try {
-      final credential = await SignInWithApple.getAppleIDCredential(
-        scopes: [AppleIDAuthorizationScopes.email, AppleIDAuthorizationScopes.fullName],
-      );
+Future<String?> _signInWithApple() async {
+  try {
+    final credential = await SignInWithApple.getAppleIDCredential(
+      scopes: [
+        AppleIDAuthorizationScopes.email,
+        AppleIDAuthorizationScopes.fullName,
+      ],
+      webAuthenticationOptions: WebAuthenticationOptions(
+        clientId: 'tu.client.id',  // Reemplaza con tu Client ID ------>crear cuenta apple desarrollador
+        redirectUri: Uri.parse('https://camino-57345.firebaseapp.com/__/auth/handler'),
+      ),
+    );
 
-      final oauthCredential = OAuthProvider("apple.com").credential(
-        idToken: credential.identityToken,
-        accessToken: credential.authorizationCode,
-      );
+    final oauthCredential = OAuthProvider("apple.com").credential(
+      idToken: credential.identityToken,
+      accessToken: credential.authorizationCode,
+    );
 
-      await _auth.signInWithCredential(oauthCredential);
-      return null; // Éxito
-    } catch (e) {
-      return 'Error con Apple: ${e.toString()}';
-    }
+    await FirebaseAuth.instance.signInWithCredential(oauthCredential);
+    return null; // Éxito
+  } catch (e) {
+    print('Error con Apple: ${e.toString()}');
+    return 'Error con Apple: ${e.toString()}';
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -117,12 +141,13 @@ class LoginScreen extends StatelessWidget {
       title: 'EL-CAMINO',
       logo: const AssetImage('assets/logo.png'),
       theme: LoginTheme(
-        primaryColor: Colors.green[800]!,
-        accentColor: const Color.fromARGB(255, 255, 255, 255),
-        buttonTheme: const LoginButtonTheme(
-          backgroundColor: Color(0xFF2E7D32), // Verde oscuro
-          highlightColor: Color(0xFF388E3C), // Verde más claro
-        ),
+        // primaryColor: Colors.green[800]!,
+        // accentColor: const Color.fromARGB(255, 255, 255, 255),
+        // buttonTheme: const LoginButtonTheme(
+        //   backgroundColor: Color(0xFF2E7D32), // Verde oscuro
+        //   highlightColor: Color(0xFF388E3C), // Verde más claro
+        // ),
+        logoWidth: 0.75
       ),
       onLogin: _authUser,
       onSignup: _signupUser,

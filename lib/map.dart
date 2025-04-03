@@ -3,6 +3,8 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'ar_flutter.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'main.dart';
 
 
 class Map extends StatefulWidget {
@@ -141,6 +143,21 @@ class _MapState extends State<Map> {
                         ),
                       ),
                     ),
+                    Positioned(
+                      top: 60,
+                      right: 20,
+                      child: 
+                      IconButton(
+                          icon: const Icon(Icons.exit_to_app),
+                          onPressed: () async {
+                            await FirebaseAuth.instance.signOut();
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(builder: (context) => const AuthWrapper()),
+                            );
+                          }
+                      ),
+                    )
+                    
                   ],
                 ),
         ),
