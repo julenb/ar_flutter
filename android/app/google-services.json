@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "879057736072",
+    "project_id": "camino-57345",
+    "storage_bucket": "camino-57345.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:879057736072:android:3cb53373808f61cbe66a3d",
+        "android_client_info": {
+          "package_name": "com.camino"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "879057736072-krpiukmkjc0umsvegvl3cd6njo1oqcba.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDozaK32v97boLUuaFurbpDEixz_8FGUtU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "879057736072-krpiukmkjc0umsvegvl3cd6njo1oqcba.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
