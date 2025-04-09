@@ -116,7 +116,7 @@ class _ObjectsOnPlanesState extends State<ObjectsOnPlanes> {
       List<ARHitTestResult> hitTestResults) async {
     var singleHitTestResult = hitTestResults.firstWhere(
         (hitTestResult) => hitTestResult.type == ARHitTestResultType.plane);
-    if (singleHitTestResult != null) {
+
       var newAnchor =
           ARPlaneAnchor(transformation: singleHitTestResult.worldTransform);
       bool? didAddAnchor = await this.arAnchorManager!.addAnchor(newAnchor);
@@ -158,6 +158,6 @@ class _ObjectsOnPlanesState extends State<ObjectsOnPlanes> {
       if (didAddWebNode) {
         this.nodes.add(newNode);
       }*/
-    }
+    
   }
 }

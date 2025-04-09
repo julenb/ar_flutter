@@ -3,23 +3,90 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'ar_flutter.dart';
+import 'package:flutter/services.dart';
 
 
 class Map extends StatefulWidget {
-  const Map({super.key});
+  final String routeName;
+  const Map({super.key, required this.routeName});
 
   @override
   State<Map> createState() => _MapState();
 }
 
+Future<List<LatLng>> _fetchRouteCoordinates(String routeName) async {
+  try {
+    // Carga el archivo txt desde los assets
+    final String route = await rootBundle.loadString('assets/coords.txt');
+
+    // Toma la primera línea que coincide y extrae las coordenadas
+    final String coordinatesString = route.split(' ').skip(1).join(' ');
+
+    // Convierte las coordenadas en una lista de LatLng
+    final List<LatLng> coordinates =
+        coordinatesString.split(' ').map((coord) {
+          final List<String> latLng = coord.split(',');
+          // Corrige el orden: LatLng(latitude, longitude)
+          return LatLng(double.parse(latLng[1]), double.parse(latLng[0]));
+        }).toList();
+
+    return coordinates;
+  } catch (e) {
+    print('Error al cargar las coordenadas de la ruta: $e');
+    return [];
+  }
+}
+
+Future<List> _fetchInterestPoints(String routeName) async {
+  // Explicitly type the list literal to match the return type
+  return [
+    {
+      "name": "fuente fontanesca",
+      "longitud": -8.664634,
+      "latitud": 42.173464,
+      "descripcion": "Una fuente histórica.",
+      "type": "font",
+    },
+    {
+      "name": "fuente de la vida",
+      "longitud": -8.614906,
+      "latitud": 42.177822,
+      "descripcion": "Una fuente moderna.",
+      "type": "font",
+    },
+    {
+      "name": "fuente de la esperanza",
+      "longitud": -8.579773,
+      "latitud": 42.172906,
+      "descripcion": "Una fuente emblemática.",
+      "type": "font",
+    },
+  ];
+}
+
+
 class _MapState extends State<Map> {
   LatLng _currentPosition = LatLng(0, 0); // Inicializa la posición actual
+  List<LatLng> _routeCoordinates = [];
+  final MapController _mapController = MapController();
+  bool _isExpanded = false; // Controla si el menú está expandido
+  List _interestPoints = []; // Lista de puntos de interés
 
   @override
   void initState() {
     super.initState();
-    _getCurrentLocation(); // Llama a la función para obtener la ubicación al iniciar
+    _loadRouteCoordinates();
+    _getCurrentLocation();
+    _getInterestPoints();
   }
+
+  Future<void> _loadRouteCoordinates() async {
+    final coordinates = await _fetchRouteCoordinates(widget.routeName);
+    setState(() {
+      _routeCoordinates = coordinates;
+    });
+  }
+
 
   Future<void> _getCurrentLocation() async {
     try {
@@ -29,6 +96,18 @@ class _MapState extends State<Map> {
       });
     } catch (e) {
       print('Error al obtener la ubicación: $e');
+    }
+  }
+
+  Future<void> _getInterestPoints() async {
+    try {
+      final points = await _fetchInterestPoints(widget.routeName);
+      setState(() {
+        _interestPoints = points;
+      });
+      print(_interestPoints);
+    } catch (e) {
+      print('Error al cargar los puntos de interés: $e');
     }
   }
 
@@ -72,6 +151,7 @@ class _MapState extends State<Map> {
               : Stack(
                   children: [
                     FlutterMap(
+                      mapController: _mapController,
                       options: MapOptions(
                         initialCenter: LatLng(
                           _currentPosition.latitude,
@@ -104,16 +184,30 @@ class _MapState extends State<Map> {
                                 ),
                               ),
                             ),
+                              ..._interestPoints.map((point) {
+                                    return Marker(
+                                      point: LatLng(point['latitud'], point['longitud']),
+                                      width: 80,
+                                      height: 80,
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          _showInterestPointOverlay(context, point);
+                                        },
+                                        child: const Icon(
+                                          Icons.foundation,
+                                          size: 30,
+                                          color: Colors.blue,
+                                        ),
+                                      ),
+                                    );
+                                  }).toList(),
+
                           ],
                         ),
                         PolylineLayer(
                           polylines: [
                             Polyline(
-                              points: [
-                                LatLng(38.73, -9.14), // Lisbon, Portugal
-                                LatLng(51.509364, -0.128928), // London, United Kingdom
-                                LatLng(52.37, 4.90), // Amsterdam, Netherlands
-                              ],
+                              points: _routeCoordinates,
                               color: Colors.red,
                               strokeWidth: 5,
                             ),
@@ -121,26 +215,57 @@ class _MapState extends State<Map> {
                         ),
                       ],
                     ),
+                    // Botón desplegable
                     Positioned(
                       bottom: 20,
                       right: 20,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => const ObjectsOnPlanes()),
-                          );
-                        },
-                        child: const Text('AR'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green[700],
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 10,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (_isExpanded) ...[
+                            FloatingActionButton(
+                              heroTag: 'btnAR',
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const ObjectsOnPlanes(),
+                                  ),
+                                );
+                              },
+                              child: const Icon(Icons.view_in_ar),
+                              backgroundColor: Colors.green[700],
+                            ),
+                            const SizedBox(height: 10),
+                            FloatingActionButton(
+                              heroTag: 'btnLocate',
+                              onPressed: () {
+                                _mapController.move(
+                                  LatLng(
+                                    _currentPosition.latitude,
+                                    _currentPosition.longitude,
+                                  ),
+                                  15, // Nivel de zoom
+                                );
+                              },
+                              child: const Icon(Icons.my_location),
+                            ),
+                            const SizedBox(height: 10),
+                          ],
+                          FloatingActionButton(
+                            heroTag: 'btnExpand',
+                            onPressed: () {
+                              setState(() {
+                                _isExpanded = !_isExpanded; // Alterna el estado
+                              });
+                            },
+                            child: Icon(
+                              _isExpanded ? Icons.close : Icons.menu,
+                            ),
                           ),
-                        ),
+                        ],
                       ),
-                    ),                    
+                    ),
                   ],
                 ),
         ),
@@ -148,9 +273,10 @@ class _MapState extends State<Map> {
     );
   }
 
+
+
   void _showOverlay(BuildContext context) {
     final overlay = Overlay.of(context);
-    if (overlay == null) return;
 
     late final OverlayEntry overlayEntry;
     overlayEntry = OverlayEntry(
@@ -206,4 +332,61 @@ class _MapState extends State<Map> {
 
     overlay.insert(overlayEntry);
   }
+
+
+
+  void _showInterestPointOverlay(BuildContext context, point) {
+  final overlay = Overlay.of(context);
+  late final OverlayEntry overlayEntry;
+  overlayEntry = OverlayEntry(
+    builder: (context) => Positioned(
+      top: MediaQuery.of(context).size.height / 2 - 100,
+      left: MediaQuery.of(context).size.width / 2 - 150,
+      child: Material(
+        color: Colors.transparent,
+        child: Container(
+          width: 300,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                blurRadius: 10,
+                offset: const Offset(0, 5),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                point['name'],
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                point['descripcion'],
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  overlayEntry.remove();
+                },
+                child: const Text('Cerrar'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+
+  overlay.insert(overlayEntry);
+}
 }
