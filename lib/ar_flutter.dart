@@ -84,9 +84,9 @@ class _ObjectsOnPlanesState extends State<ObjectsOnPlanes> {
 
     this.arSessionManager!.onInitialize(
           showFeaturePoints: false,
-          showPlanes: true,
-          customPlaneTexturePath: "Images/triangle.png",
-          showWorldOrigin: true,
+          showPlanes: false,
+          // customPlaneTexturePath: "Images/triangle.png",
+          showWorldOrigin: false,
         );
     this.arObjectManager!.onInitialize();
 

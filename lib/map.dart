@@ -142,6 +142,7 @@ class _MapState extends State<Map> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Builder(
         builder: (context) => Scaffold(
           body: _currentPosition.latitude == 0 && _currentPosition.longitude == 0
