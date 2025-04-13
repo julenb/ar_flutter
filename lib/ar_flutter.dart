@@ -126,7 +126,7 @@ class _ObjectsOnPlanesState extends State<ObjectsOnPlanes> {
         var newNode = ARNode(
             type: NodeType.webGLB,
             uri:
-                "https://github.com/KhronosGroup/glTF-Sample-Models/raw/refs/heads/main/2.0/Duck/glTF-Binary/Duck.glb",
+                "https://zenodo.org/api/files/2e09d226-e9ff-409e-ab71-4dae572a99ca/4d7e8905634148cea535bc8c816c0a9f.glb",
             scale: Vector3(0.2, 0.2, 0.2),
             position: Vector3(0.0, 0.0, 0.0),
             rotation: Vector4(1.0, 0.0, 0.0, 0.0));

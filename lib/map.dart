@@ -43,21 +43,21 @@ Future<List> _fetchInterestPoints(String routeName) async {
     {
       "name": "fuente fontanesca",
       "longitud": -8.664634,
-      "latitud": 42.173464,
+      "latitud": 42.170464,
       "descripcion": "Una fuente histórica.",
       "type": "font",
     },
     {
       "name": "fuente de la vida",
       "longitud": -8.614906,
-      "latitud": 42.177822,
+      "latitud": 42.170822,
       "descripcion": "Una fuente moderna.",
       "type": "font",
     },
     {
       "name": "fuente de la esperanza",
       "longitud": -8.579773,
-      "latitud": 42.172906,
+      "latitud": 42.177906,
       "descripcion": "Una fuente emblemática.",
       "type": "font",
     },
@@ -194,11 +194,19 @@ class _MapState extends State<Map> {
                                         onTap: () {
                                           _showInterestPointOverlay(context, point);
                                         },
-                                        child: const Icon(
-                                          Icons.foundation,
-                                          size: 30,
-                                          color: Colors.blue,
-                                        ),
+                                          child: SizedBox(
+                                            width: 10,
+                                            height: 10,
+                                            child: Image.asset(
+                                              'assets/fountain.png',
+                                              fit: BoxFit.scaleDown,
+                                            ),
+                                          ),
+                                // child: const Icon(
+                                        //   Icons.fountain,
+                                        //   size: 30,
+                                        //   color: Colors.blue,
+                                        // ),
                                       ),
                                     );
                                   }).toList(),

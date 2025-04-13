@@ -139,7 +139,7 @@ Future<String?> _signInWithApple() async {
   @override
   Widget build(BuildContext context) {
     return FlutterLogin(
-      title: 'EL-CAMINO',
+      title: 'Pilgrim\'s App',
       logo: const AssetImage('assets/logo.png'),
       theme: LoginTheme(
         // primaryColor: Colors.green[800]!,
