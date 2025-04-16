@@ -19,6 +19,9 @@ class AboutScreen extends StatelessWidget {
       'linkedin': 'https://www.linkedin.com/in/anxo/',
       'email': 'mailto:agesto@gti.uvigo.es'
     },
+  ];
+
+  final List<Map<String, String>> ips = [
     {
       'name': 'Francisco de Arriba Pérez',
       'linkedin': 'https://www.linkedin.com/in/franciscodearriba/',
@@ -64,11 +67,11 @@ void _launchURL(String url) async {
                     Row(
                       children: [
                         IconButton(
-                          icon: FaIcon(FontAwesomeIcons.linkedin, color: Colors.blue, size: 50),
+                          icon: FaIcon(FontAwesomeIcons.linkedin, color: Colors.blue, size: 20),
                           onPressed: () => _launchURL(dev['linkedin']!),
                         ),
                         IconButton(
-                          icon: Icon(Icons.email, color: Colors.red, size: 50),
+                          icon: Icon(Icons.email, color: Colors.red, size: 20),
                           onPressed: () => _launchURL(dev['email']!),
                         ),
                       ],
@@ -76,6 +79,37 @@ void _launchURL(String url) async {
                     Divider(),
                   ],
                 )),
+            Text(
+              '',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            Text(
+              'Investigadores Principales:',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 10),
+            ...ips.map((dev) => Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  dev['name']!,
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                ),
+                Row(
+                  children: [
+                    IconButton(
+                      icon: FaIcon(FontAwesomeIcons.linkedin, color: Colors.blue, size: 20),
+                      onPressed: () => _launchURL(dev['linkedin']!),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.email, color: Colors.red, size: 20),
+                      onPressed: () => _launchURL(dev['email']!),
+                    ),
+                  ],
+                ),
+                Divider(),
+              ],
+            )),
           ],
         ),
       ),

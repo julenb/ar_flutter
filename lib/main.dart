@@ -6,12 +6,30 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'inicio.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+
+  if (kIsWeb) {
+    await Firebase.initializeApp(
+      options: const FirebaseOptions(
+          apiKey: "AIzaSyCbULcWOICbBq2CdOzLGjRiGYamCtGokuU",
+          authDomain: "camino-57345.firebaseapp.com",
+          projectId: "camino-57345",
+          storageBucket: "camino-57345.firebasestorage.app",
+          messagingSenderId: "879057736072",
+          appId: "1:879057736072:web:89bb90afa1312ae1e66a3d",
+          measurementId: "G-CWC4XW9793"
+      ),
+    );
+  } else {
+    await Firebase.initializeApp();
+  }
   runApp(const MyApp());
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -22,7 +40,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Login Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primaryColor: const Color(0xFF4D94E1), // Fondo principal azul
       ),
       home: const AuthWrapper(),
     );
@@ -92,19 +110,33 @@ class LoginScreen extends StatelessWidget {
 
   Future<String?> _signInWithGoogle() async {
     try {
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-      final GoogleSignInAuthentication? googleAuth =
-          await googleUser?.authentication;
+      if (kIsWeb) {
 
-      if (googleAuth == null) return 'Error en la autenticación de Google';
+        // 🌐 FLUTTER WEB: usa Firebase para hacer login con popup directamente
+        final googleProvider = GoogleAuthProvider();
 
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
+        // Opcional: scopes
+        googleProvider
+          ..addScope('email')
+          ..setCustomParameters({'prompt': 'select_account'});
 
-      await _auth.signInWithCredential(credential);
-      return null; // Éxito
+        await _auth.signInWithPopup(googleProvider);
+        return null; // éxito
+      } else {
+        final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+        if (googleUser == null) return 'Inicio de sesión cancelado';
+
+        final GoogleSignInAuthentication googleAuth =
+        await googleUser.authentication;
+
+        final credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
+
+        await _auth.signInWithCredential(credential);
+        return null; // éxito
+      }
     } catch (e) {
       return 'Error con Google: ${e.toString()}';
     }
@@ -140,15 +172,14 @@ Future<String?> _signInWithApple() async {
   Widget build(BuildContext context) {
     return FlutterLogin(
       title: 'Pilgrim\'s App',
-      logo: const AssetImage('assets/logo.png'),
+      logo: const AssetImage('images/logo.png'),
       theme: LoginTheme(
-        // primaryColor: Colors.green[800]!,
-        // accentColor: const Color.fromARGB(255, 255, 255, 255),
-        // buttonTheme: const LoginButtonTheme(
-        //   backgroundColor: Color(0xFF2E7D32), // Verde oscuro
-        //   highlightColor: Color(0xFF388E3C), // Verde más claro
-        // ),
-        logoWidth: 0.75
+          primaryColor: const Color(0xFF4D94E1), // Fondo principal azul
+          titleStyle: const TextStyle(
+            color: Colors.white,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
       ),
       onLogin: _authUser,
       onSignup: _signupUser,
@@ -158,6 +189,7 @@ Future<String?> _signInWithApple() async {
           icon: FontAwesomeIcons.google,
           label: 'Google',
           callback: _signInWithGoogle,
+
         ),
         LoginProvider(
           icon: FontAwesomeIcons.apple,
