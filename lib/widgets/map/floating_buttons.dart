@@ -3,6 +3,8 @@ import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 
+import '../../ar_flutter.dart';
+
 class FloatingButtons extends StatelessWidget {
   final bool isExpanded;
   final VoidCallback onToggleExpand;
@@ -25,8 +27,12 @@ class FloatingButtons extends StatelessWidget {
             FloatingActionButton(
               heroTag: 'btnAR',
               onPressed: () {
-                Navigator.pushNamed(context, '/ar'); // o navega como prefieras
-              },
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ObjectsOnPlanes(),
+                  ),
+                );              },
               child: const Icon(Icons.view_in_ar),
               backgroundColor: Colors.green[700],
             ),

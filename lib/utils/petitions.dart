@@ -5,6 +5,63 @@ import 'package:latlong2/latlong.dart';
 import 'dart:convert';
 
 
+List getDaysInformation(String route){
+  //TODO: Cambiar a una llamada a la API para obtener la información de las rutas
+  List cardsJson = [
+    {
+    "day": "1",
+    "pois": [
+      {
+        "name": "Arrancando desde Redondela",
+        "longitud": 10,
+        "image": "aragon.jpg",
+      },
+      {
+        "name": "Cesantes",
+        "longitud": 20,
+        "image": "costa.jpg",
+      },
+      {
+        "name": "San Simón",
+        "longitud": 30,
+        "image": "montana.jpg",
+      },
+      {
+        "name": "Mirador Outeiro Grande",
+        "longitud": 40,
+        "image": "rio.jpg",
+      },
+      {
+        "name": "Pontevedra",
+        "longitud": 50,
+        "image": "bosque.jpg",
+      }
+    ]
+  },
+
+    {
+      "day": "2",
+      "pois": [
+        {
+          "name": "Arrancando desde Pontevedra",
+          "longitud": 10,
+          "image": "aragon.jpg",
+        },
+        {
+          "name": "Fonte do Curro",
+          "longitud": 50,
+          "image": "bosque.jpg",
+        }
+      ]
+    },
+
+  ]as List;
+
+
+  return cardsJson;
+}
+
+
 
 
 List getCardInformation(String route){

@@ -25,6 +25,8 @@ dependencies:
   sign_in_with_apple: ^6.1.4
   url_launcher: ^6.3.1
   permission_handler: ^11.0.0
+  shared_preferences: ^2.2.0
+
 
 
 dev_dependencies:
@@ -37,3 +39,4 @@ flutter:
   assets:
     - images/
     - data/
+    - data3D/

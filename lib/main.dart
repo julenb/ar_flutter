@@ -7,7 +7,14 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'inicio.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'inicio.dart';
+import 'main.dart';
 
+final ValueNotifier<ThemeMode> themeNotifier = ValueNotifier(ThemeMode.light);
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,34 +22,49 @@ void main() async {
   if (kIsWeb) {
     await Firebase.initializeApp(
       options: const FirebaseOptions(
-          apiKey: "AIzaSyCbULcWOICbBq2CdOzLGjRiGYamCtGokuU",
-          authDomain: "camino-57345.firebaseapp.com",
-          projectId: "camino-57345",
-          storageBucket: "camino-57345.firebasestorage.app",
-          messagingSenderId: "879057736072",
-          appId: "1:879057736072:web:89bb90afa1312ae1e66a3d",
-          measurementId: "G-CWC4XW9793"
+        apiKey: "AIzaSyCbULcWOICbBq2CdOzLGjRiGYamCtGokuU",
+        authDomain: "camino-57345.firebaseapp.com",
+        projectId: "camino-57345",
+        storageBucket: "camino-57345.firebasestorage.app",
+        messagingSenderId: "879057736072",
+        appId: "1:879057736072:web:89bb90afa1312ae1e66a3d",
+        measurementId: "G-CWC4XW9793",
       ),
     );
   } else {
     await Firebase.initializeApp();
   }
+
+  // Cargar la preferencia del tema
+  final prefs = await SharedPreferences.getInstance();
+  final savedTheme = prefs.getString('theme') ?? 'light';
+
+  if (savedTheme == 'dark') {
+    themeNotifier.value = ThemeMode.light;
+  } else {
+    themeNotifier.value = ThemeMode.light;
+  }
+
   runApp(const MyApp());
 }
-
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Login Demo',
-      theme: ThemeData(
-        primaryColor: const Color(0xFF4D94E1), // Fondo principal azul
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: themeNotifier,
+      builder: (context, themeMode, _) => MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Flutter Login Demo',
+        theme: ThemeData(
+          primaryColor: const Color(0xFF4D94E1),
+        ),
+        darkTheme: ThemeData.dark(),
+        themeMode: themeMode,
+        home: const AuthWrapper(),
       ),
-      home: const AuthWrapper(),
     );
   }
 }
@@ -71,7 +93,7 @@ class AuthWrapper extends StatelessWidget {
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});
 
-  Duration get loginTime => const Duration(milliseconds: 2250);
+  // Duration get loginTime => const Duration(milliseconds: 2250);
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   /// 🔑 Autenticación con Firebase (Email/Contraseña)

@@ -123,10 +123,12 @@ class _ObjectsOnPlanesState extends State<ObjectsOnPlanes> {
       if (didAddAnchor!) {
         this.anchors.add(newAnchor);
         // Add note to anchor
+
         var newNode = ARNode(
             type: NodeType.webGLB,
-            uri:
-                "https://zenodo.org/api/files/2e09d226-e9ff-409e-ab71-4dae572a99ca/4d7e8905634148cea535bc8c816c0a9f.glb",
+            uri: "https://zenodo.org/api/files/08950a35-683e-4ff9-bf0d-3f64ef72d3be/77d3028507ed4631a356aeb0a055a55e.glb", // ⚠️ ¡PERO! usa `localFileName` abajo
+            // uri:
+            //     "https://zenodo.org/api/files/2e09d226-e9ff-409e-ab71-4dae572a99ca/4d7e8905634148cea535bc8c816c0a9f.glb",
             scale: Vector3(0.2, 0.2, 0.2),
             position: Vector3(0.0, 0.0, 0.0),
             rotation: Vector4(1.0, 0.0, 0.0, 0.0));
